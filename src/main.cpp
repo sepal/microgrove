@@ -1,9 +1,18 @@
 #include <Arduino.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include "input.h"
 
-void setup() {
-  // put your setup code here, to run once:
+Input input;
+
+void setup()
+{
+    Serial.begin(9600);
+    input.begin();
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+    input.update();
 }
