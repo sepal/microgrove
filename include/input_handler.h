@@ -5,6 +5,8 @@ class KeyboardHandler
 {
 public:
     virtual void keyboardEvent(int button, bool pressed);
+
+    
 };
 
 class PadHandler
