@@ -6,7 +6,7 @@
 #include "Keyboard.h"
 #include "ElectVoice.h"
 
-#define ELECT_OSC_MAX_VOICES 1
+#define ELECT_OSC_MAX_VOICES 4
 
 class ElectSynth: public NoteReceiver
 {
@@ -55,6 +55,9 @@ protected:
     float decay = 35.0f;
     float sustain = 0.5f;
     float release = 300.0f;
+
+
+    float voiceStack[ELECT_OSC_MAX_VOICES];
 };
 
 

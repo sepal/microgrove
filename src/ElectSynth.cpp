@@ -10,22 +10,39 @@ ElectSynth::ElectSynth()
     this->voiceMixer = new AudioMixer4();
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
+        this->voiceMixer->gain(i, 0.25);
         this->connections[i] = new AudioConnection(*this->voices[i]->getOutput(), 0, *this->voiceMixer, i);
     }
 }
 
 void ElectSynth::onNoteOn(int note, int velocity)
 {
-    vcoFreq = NOTE_FREQ[note];
+    float vcoFreq = NOTE_FREQ[note];
 
-    this->voices[0]->vco1->frequency(vcoFreq);
-    this->voices[0]->vco2->frequency(vcoFreq * this->vcoRatio);
-    this->voices[0]->env->noteOn();
+    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
+    {
+        if (this->voiceStack[i] == 0) {
+            this->voices[i]->vco1->frequency(vcoFreq);
+            this->voices[i]->vco2->frequency(vcoFreq * this->vcoRatio);
+            this->voices[i]->env->noteOn();
+            this->voiceStack[i] = vcoFreq;
+            return;
+        }
+    }
+    
 }
 
 void ElectSynth::onNoteOff(int note)
 {
-    this->voices[0]->env->noteOff();
+
+    float vcoFreq = NOTE_FREQ[note];
+    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
+    {
+        if (this->voiceStack[i] == vcoFreq) {
+            this->voices[i]->env->noteOff();
+            this->voiceStack[i] = 0;
+        }
+    }
 }
 
 AudioStream *ElectSynth::getOutput()
@@ -59,7 +76,12 @@ void ElectSynth::setVCORatio(float ratio)
 {
     this->vcoRatio = ratio;
 
-    this->voices[0]->vco2->frequency(vcoFreq * this->vcoRatio);
+    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
+    {
+        if (this->voiceStack[i] > 0) {
+            this->voices[i]->vco2->frequency(this->voiceStack[i] * this->vcoRatio);
+        }
+    }
 }
 
 void ElectSynth::setVCOMix(float mix)
