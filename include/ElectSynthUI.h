@@ -10,6 +10,9 @@ class ElectSynthUI : public EncoderHandler
 public:
     ElectSynthUI(ElectSynth *synth);
 
+    short getPrevWaveform(short table);
+    short getNextWaveform(short table);
+
     virtual void encoderEvent(int encoder, bool moved_left);
     virtual void encoderButtonEvent(int encoder, bool pressed);
 
