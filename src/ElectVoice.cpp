@@ -30,15 +30,3 @@ AudioStream *ElectVoice::getOutput()
 {
     return this->env;
 }
-
-void ElectVoice::onNoteOn(float freq)
-{
-    this->vco1->frequency(freq);
-    this->vco2->frequency(freq * this->vcoRatio);
-    this->env->noteOn();
-}
-
-void ElectVoice::onNoteOff()
-{
-    this->env->noteOff();
-}

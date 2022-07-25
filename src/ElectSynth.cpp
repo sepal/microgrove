@@ -16,13 +16,16 @@ ElectSynth::ElectSynth()
 
 void ElectSynth::onNoteOn(int note, int velocity)
 {
-    float freq = NOTE_FREQ[note];
-    this->voices[0]->onNoteOn(freq);
+    vcoFreq = NOTE_FREQ[note];
+
+    this->voices[0]->vco1->frequency(vcoFreq);
+    this->voices[0]->vco2->frequency(vcoFreq * this->vcoRatio);
+    this->voices[0]->env->noteOn();
 }
 
 void ElectSynth::onNoteOff(int note)
 {
-    this->voices[0]->onNoteOff();
+    this->voices[0]->env->noteOff();
 }
 
 AudioStream *ElectSynth::getOutput()
@@ -56,10 +59,7 @@ void ElectSynth::setVCORatio(float ratio)
 {
     this->vcoRatio = ratio;
 
-    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
-    {
-        this->voices[i]->vcoRatio = ratio;
-    }
+    this->voices[0]->vco2->frequency(vcoFreq * this->vcoRatio);
 }
 
 void ElectSynth::setVCOMix(float mix)
@@ -77,19 +77,19 @@ void ElectSynth::setVCOMix(float mix)
 
 void ElectSynth::setFilterCutoff(float freq)
 {
-    this->freq = freq;
+    this->filterFreq = freq;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->filter->frequency(freq);
+        this->voices[i]->filter->frequency(filterFreq);
     }
 }
 
 void ElectSynth::setFilterResonance(float q)
 {
-    this->q = q;
+    this->filterQ = q;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->filter->resonance(q);
+        this->voices[i]->filter->resonance(filterQ);
     }
 }
 

@@ -42,14 +42,14 @@ protected:
     AudioMixer4 *voiceMixer;
     AudioConnection *connections[ELECT_OSC_MAX_VOICES];
 
-
+    float vcoFreq = 220.0f;
     short vco1Table = WAVEFORM_SINE;
     short vco2Table = WAVEFORM_SAWTOOTH;
     float vcoRatio = 0.5f;
     float vcoMix = 0.5f;
 
-    float freq = 1.0f;
-    float q = 0.0f;
+    float filterFreq = 1.0f;
+    float filterQ = 0.0f;
 
     float attack = 1.5f;
     float decay = 35.0f;
