@@ -5,10 +5,12 @@
 #include "input.h"
 #include "Keyboard.h"
 #include "ElectSynth.h"
+#include "ElectSynthUI.h"
 
 Input input;
 Keyboard keyboard;
 ElectSynth* synth;
+ElectSynthUI* electUI;
 AudioConnection* connections[3];
 AudioOutputI2S* i2s1;
 AudioControlSGTL5000* codec;
@@ -32,10 +34,13 @@ void setup()
     codec->lineOutLevel(13);
     codec->volume(0.45);
 
+    electUI = new ElectSynthUI(synth);
+
     Serial.println("init input");
     input.begin();
     input.setKeyboardHandler(&keyboard);
     keyboard.setReceiver(synth);
+    input.setEncoderHandler(electUI);
     Serial.println("ready");
 
     AudioMemory(24);

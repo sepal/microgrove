@@ -21,7 +21,7 @@ public:
     void setVCO1Table(short table);
     void setVCO2Table(short table);
 
-    void setVCODetune(float ratio);
+    void setVCORatio(float ratio);
     void setVCOMix(float mix);
     void setFilterCutoff(float freq);
     void setFilterResonance(float q);
@@ -31,6 +31,11 @@ public:
     void setSustain(float level);
     void setRelease(float ms);
 
+    short getVCO1Table();
+    short getVCO2Table();
+
+    float getVCORatio();
+    float getVCOMix();
 
 protected:
     ElectVoice *voices[ELECT_OSC_MAX_VOICES];
