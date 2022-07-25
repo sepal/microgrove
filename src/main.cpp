@@ -2,6 +2,9 @@
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
+#include <Adafruit_SSD1351.h>
+#include <SPI.h>
+#include "Display.h"
 #include "input.h"
 #include "Keyboard.h"
 #include "ElectSynth.h"
@@ -9,17 +12,17 @@
 
 Input input;
 Keyboard keyboard;
-ElectSynth* synth;
-ElectSynthUI* electUI;
-AudioConnection* connections[3];
-AudioOutputI2S* i2s1;
-AudioControlSGTL5000* codec;
-
-
+ElectSynth *synth;
+ElectSynthUI *electUI;
+AudioConnection *connections[3];
+AudioOutputI2S *i2s1;
+AudioControlSGTL5000 *codec;
 
 void setup()
 {
     Serial.begin(9600);
+
+    display_init();
 
     Serial.println("init connections");
     synth = new ElectSynth();
@@ -45,6 +48,7 @@ void setup()
 
     AudioMemory(24);
     AudioInterrupts();
+    display.fillScreen(BLACK);
 }
 
 void loop()
