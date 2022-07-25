@@ -4,7 +4,7 @@
 #include <Adafruit_GFX.h>
 #include "input.h"
 #include "Keyboard.h"
-#include "elect_synth.h"
+#include "ElectSynth.h"
 
 Input input;
 Keyboard keyboard;
