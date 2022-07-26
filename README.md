@@ -1,2 +1,2 @@
 # Microgrove
-Experimental firmware for [Portable Synth](https://github.com/prajwal1121/Portable-Synth) by [@](https://github.com/prajwal1121).
+Experimental firmware for [Portable Synth](https://github.com/prajwal1121/Portable-Synth) by [@prajwal1121](https://github.com/prajwal1121).
