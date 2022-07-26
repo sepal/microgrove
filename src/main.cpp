@@ -10,6 +10,8 @@
 #include "ElectSynth.h"
 #include "ElectSynthUI.h"
 
+#define PIN_VOLUME 15
+
 Input input;
 Keyboard keyboard;
 ElectSynth *synth;
@@ -17,6 +19,8 @@ ElectSynthUI *electUI;
 AudioConnection *connections[3];
 AudioOutputI2S *i2s1;
 AudioControlSGTL5000 *codec;
+
+int vol = 50;
 
 void setup()
 {
@@ -55,6 +59,13 @@ void setup()
 
 void loop()
 {
+    int n = analogRead(PIN_VOLUME);
+
+    if (n != vol) {
+        vol = n;
+        codec->volume((float) n / 1023);
+    }
+
     input.update();
     electUI->update();
 }
