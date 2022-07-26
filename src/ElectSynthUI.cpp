@@ -30,6 +30,7 @@ void ElectSynthUI::draw()
 
     drawScope();
     drawVCORatio();
+    drawVCOMix();
 }
 
 void ElectSynthUI::update()
@@ -55,23 +56,27 @@ void ElectSynthUI::drawScope()
     for (int x = 0; x < 108; x++)
     {
         y = scope->buffer[i] >> 8;
-        display.drawPixel(x + 20, y + 40, PURPLE);
+        if (y < 23)
+            display.drawPixel(x + 20, y + 40, PURPLE);
         i += 2;
     }
 }
 
 void ElectSynthUI::drawVCORatio()
 {
-    int top = 98 - synth->getVCORatio() * 15;
-    int bottom = 98 + synth->getVCORatio() * 15;
     display.fillRect(20, 69, 53, 59, BLACK);
-    display.drawCircle(46, top, 5, RED);
-    display.drawCircle(46, bottom, 5, GREEN);
-    display.drawFastVLine(46, top, bottom - top, BLUE);
+    display.setTextColor(BLUE);
+    display.setCursor(30, 98);
+    display.println(synth->getVCORatio(), 3);
+    display.drawFastHLine(42+6*vcoAddMod, 106, 6, BLUE);
 }
 
 void ElectSynthUI::drawVCOMix()
 {
+    display.fillRect(75, 69, 53, 59, BLACK);
+    display.drawCircle(101, 98-15, 5, RED);
+    display.drawCircle(101, 98+15, 5, GREEN);
+    display.fillCircle(101, 113-synth->getVCOMix()*30, 3, YELLOW);
 }
 
 short ElectSynthUI::getPrevWaveform(short table)
@@ -124,7 +129,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
     }
     case 2:
     {
-        float to_add = moved_left ? -0.01f : +0.01f;
+        float to_add = moved_left ? -vcoAddModes[vcoAddMod] : vcoAddModes[vcoAddMod];
         float ratio = this->synth->getVCORatio() + to_add;
         this->synth->setVCORatio(ratio);
         Serial.print("ratio: ");
@@ -139,6 +144,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
         this->synth->setVCOMix(mix);
         Serial.print("mix: ");
         Serial.println(mix);
+        drawVCOMix();
         break;
     }
     }
@@ -146,4 +152,19 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
 
 void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
 {
+    switch (encoder)
+    {
+    case 2:
+        if (pressed) {
+            vcoAddMod++;
+            if (vcoAddMod > 2) {
+                vcoAddMod = 0;
+            }
+            drawVCORatio();
+        }
+        break;
+    
+    default:
+        break;
+    }
 }

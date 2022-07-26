@@ -32,6 +32,9 @@ protected:
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;
     AudioConnection *connection;
+
+    int vcoAddMod = 1;
+    float vcoAddModes[3] = {0.1f, 0.01f, 0.001f};
 };
 
 #endif /* _ELECT_SYNTH_UI_H_ */
