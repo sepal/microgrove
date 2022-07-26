@@ -25,6 +25,9 @@ public:
 protected:
     void drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form);
     void drawScope();
+    void drawVCORatio();
+    void drawVCOMix();
+
 
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;

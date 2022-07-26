@@ -6,10 +6,9 @@ ElectSynthUI::ElectSynthUI(ElectSynth *synth)
     this->scope = new AudioAnalyzeOscilloscope();
 
     this->connection = new AudioConnection(*this->synth->getOutput(), *this->scope);
-
 }
 
-void ElectSynthUI::draw() 
+void ElectSynthUI::draw()
 {
     display.fillScreen(BLACK);
     display.setTextColor(WHITE);
@@ -20,16 +19,17 @@ void ElectSynthUI::draw()
     drawVCOFormSelection(0, 10, RED, this->synth->getVCO1Table());
     digitalWrite(enc1LED, HIGH);
 
-
     drawVCOFormSelection(0, 70, GREEN, this->synth->getVCO2Table());
     digitalWrite(enc2LED, HIGH);
-
+    digitalWrite(enc3LED, HIGH);
+    digitalWrite(enc4LED, HIGH);
 
     display.drawFastVLine(18, 10, 118, WHITE);
     display.drawFastHLine(0, 68, 128, WHITE);
     display.drawFastVLine(74, 68, 60, WHITE);
 
     drawScope();
+    drawVCORatio();
 }
 
 void ElectSynthUI::update()
@@ -37,12 +37,13 @@ void ElectSynthUI::update()
     drawScope();
 }
 
-void ElectSynthUI::drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form) {
+void ElectSynthUI::drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form)
+{
     int colors[] = {DARK_GREY, DARK_GREY, DARK_GREY};
     colors[form] = active_color;
     display.drawBitmap(0, y, ICON_SINE, 16, 16, colors[0]);
-    display.drawBitmap(0, y+20, ICON_SAWTOOTH, 16, 16, colors[1]);
-    display.drawBitmap(0, y+40, ICON_SQUARE, 16, 16, colors[2]);
+    display.drawBitmap(0, y + 20, ICON_SAWTOOTH, 16, 16, colors[1]);
+    display.drawBitmap(0, y + 40, ICON_SQUARE, 16, 16, colors[2]);
 }
 
 void ElectSynthUI::drawScope()
@@ -51,12 +52,26 @@ void ElectSynthUI::drawScope()
 
     int y = 0;
     int i = 0;
-    for (int x=0; x<108; x++)
+    for (int x = 0; x < 108; x++)
     {
         y = scope->buffer[i] >> 8;
         display.drawPixel(x + 20, y + 40, PURPLE);
-        i+=2;
+        i += 2;
     }
+}
+
+void ElectSynthUI::drawVCORatio()
+{
+    int top = 98 - synth->getVCORatio() * 15;
+    int bottom = 98 + synth->getVCORatio() * 15;
+    display.fillRect(20, 69, 53, 59, BLACK);
+    display.drawCircle(46, top, 5, RED);
+    display.drawCircle(46, bottom, 5, GREEN);
+    display.drawFastVLine(46, top, bottom - top, BLUE);
+}
+
+void ElectSynthUI::drawVCOMix()
+{
 }
 
 short ElectSynthUI::getPrevWaveform(short table)
@@ -114,6 +129,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
         this->synth->setVCORatio(ratio);
         Serial.print("ratio: ");
         Serial.println(ratio);
+        drawVCORatio();
         break;
     }
     case 3:
