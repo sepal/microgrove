@@ -16,23 +16,60 @@ void ElectSynthUI::draw()
     display.setCursor(0, 0);
     display.print("ElectSynth");
     display.setCursor(104, 0);
-    display.print("VCOs");
-
-    digitalWrite(enc1LED, HIGH);
-    digitalWrite(enc2LED, HIGH);
-    digitalWrite(enc3LED, HIGH);
-    digitalWrite(enc4LED, HIGH);
 
     drawScope();
-    drawVCOFormSelection();
-    drawVCORatio();
-    drawVCOMix();
+
+    switch (page)
+    {
+    case 0:
+        display.print("VCOs");
+        digitalWrite(enc1LED, HIGH);
+        digitalWrite(enc2LED, HIGH);
+        digitalWrite(enc3LED, HIGH);
+        digitalWrite(enc4LED, HIGH);
+
+        drawVCOFormSelection();
+        drawVCORatio();
+        drawVCOMix();
+        break;
+    
+    default:
+        break;
+    }
+
 }
 
 void ElectSynthUI::update()
 {
     drawScope();
 }
+
+void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
+{
+    switch (page)
+    {
+    case 0:
+        this->vcoEncoderEvent(encoder, moved_left);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
+{
+    switch (page)
+    {
+    case 0:
+        this->vcoEncoderButtonEvent(encoder, pressed);
+        break;
+    
+    default:
+        break;
+    }
+}
+
 void ElectSynthUI::drawScope()
 {
     display.fillRect(0, 8, 128, 48, BLACK);
@@ -105,7 +142,7 @@ void ElectSynthUI::drawVCOMix()
     display.drawFastHLine(89 + 6 * vcoMixMod, 112, 6, YELLOW);
 }
 
-void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
+void ElectSynthUI::vcoEncoderEvent(int encoder, bool moved_left)
 {
     switch (encoder)
     {
@@ -148,7 +185,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
     }
 }
 
-void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
+void ElectSynthUI::vcoEncoderButtonEvent(int encoder, bool pressed)
 {
     switch (encoder)
     {

@@ -19,11 +19,17 @@ public:
     virtual void encoderEvent(int encoder, bool moved_left);
     virtual void encoderButtonEvent(int encoder, bool pressed);
 
+
 protected:
     void drawVCOFormSelection();
     void drawScope();
     void drawVCORatio();
     void drawVCOMix();
+
+    void vcoEncoderEvent(int encoder, bool moved_left);
+    void vcoEncoderButtonEvent(int encoder, bool pressed);
+
+    uint8_t page = 0;
 
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;
