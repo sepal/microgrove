@@ -194,3 +194,13 @@ float ElectSynth::getVCOMix()
 {
     return this->vcoMix;
 }
+
+float ElectSynth::getFilterCutoff()
+{
+    return this->filterFreq;
+}
+
+float ElectSynth::getFilterResonance()
+{
+    return this->filterQ;
+}

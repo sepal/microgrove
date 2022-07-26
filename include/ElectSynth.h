@@ -39,6 +39,9 @@ public:
     float getVCORatio();
     float getVCOMix();
 
+    float getFilterCutoff();
+    float getFilterResonance();
+
 protected:
     ElectVoice *voices[ELECT_OSC_MAX_VOICES];
     AudioMixer4 *voiceMixer;
@@ -50,7 +53,7 @@ protected:
     float vcoRatio = 0.5f;
     float vcoMix = 0.5f;
 
-    float filterFreq = 1.0f;
+    float filterFreq = 1000.0f;
     float filterQ = 0.0f;
 
     float attack = 1.5f;

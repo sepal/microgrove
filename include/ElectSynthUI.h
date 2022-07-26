@@ -37,6 +37,8 @@ protected:
 
     uint8_t vcoAddMod = 1;
     float vcoAddModes[3] = {0.1f, 0.01f, 0.001f};
+
+    uint8_t vcfMode = 0;
 };
 
 #endif /* _ELECT_SYNTH_UI_H_ */

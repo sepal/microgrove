@@ -139,6 +139,18 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
     }
     case 1:
     {
+        if (vcfMode == 0) {
+            float freq = this->synth->getFilterCutoff();
+            freq += moved_left ? - 50.0f : 50.0f;
+            this->synth->setFilterCutoff(freq);
+            Serial.println(freq);
+        }
+        else {
+            float q = this->synth->getFilterResonance();
+            q += moved_left ? - 0.1f : 0.1f;
+            this->synth->setFilterResonance(q);
+            Serial.println(q);
+        }
 
         break;
     }
@@ -174,6 +186,11 @@ void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
         {
             vcoTableSelect = vcoTableSelect == 0 ? 1 : 0;
             Serial.println(vcoTableSelect);
+        }
+        break;
+    case 1:
+        if (pressed) {
+            vcfMode = vcfMode == 0 ? 1 : 0;
         }
         break;
     case 2:
