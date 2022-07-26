@@ -23,17 +23,19 @@ public:
     virtual void encoderButtonEvent(int encoder, bool pressed);
 
 protected:
-    void drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form);
+    void drawVCOFormSelection();
     void drawScope();
     void drawVCORatio();
     void drawVCOMix();
-
 
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;
     AudioConnection *connection;
 
-    int vcoAddMod = 1;
+    uint8_t vcoTableSelect = 0;
+    uint16_t vcoColors[2] = {MAGENTA, CYAN};
+
+    uint8_t vcoAddMod = 1;
     float vcoAddModes[3] = {0.1f, 0.01f, 0.001f};
 };
 

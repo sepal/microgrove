@@ -8,7 +8,7 @@
 
 #define ELECT_OSC_MAX_VOICES 4
 
-class ElectSynth: public NoteReceiver
+class ElectSynth : public NoteReceiver
 {
 public:
     ElectSynth();
@@ -18,6 +18,7 @@ public:
 
     virtual AudioStream *getOutput();
 
+    void setVCOTable(uint8_t vco, short table);
     void setVCO1Table(short table);
     void setVCO2Table(short table);
 
@@ -31,6 +32,7 @@ public:
     void setSustain(float level);
     void setRelease(float ms);
 
+    short getVCOTable(uint8_t vco);
     short getVCO1Table();
     short getVCO2Table();
 
@@ -56,9 +58,7 @@ protected:
     float sustain = 0.5f;
     float release = 300.0f;
 
-
     float voiceStack[ELECT_OSC_MAX_VOICES];
 };
-
 
 #endif /* _ELECT_SYNTH_H_ */

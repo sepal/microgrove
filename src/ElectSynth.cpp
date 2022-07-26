@@ -21,7 +21,8 @@ void ElectSynth::onNoteOn(int note, int velocity)
 
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        if (this->voiceStack[i] == 0) {
+        if (this->voiceStack[i] == 0)
+        {
             this->voices[i]->vco1->frequency(vcoFreq);
             this->voices[i]->vco2->frequency(vcoFreq * this->vcoRatio);
             this->voices[i]->env->noteOn();
@@ -29,7 +30,6 @@ void ElectSynth::onNoteOn(int note, int velocity)
             return;
         }
     }
-    
 }
 
 void ElectSynth::onNoteOff(int note)
@@ -38,7 +38,8 @@ void ElectSynth::onNoteOff(int note)
     float vcoFreq = NOTE_FREQ[note];
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        if (this->voiceStack[i] == vcoFreq) {
+        if (this->voiceStack[i] == vcoFreq)
+        {
             this->voices[i]->env->noteOff();
             this->voiceStack[i] = 0;
         }
@@ -48,6 +49,18 @@ void ElectSynth::onNoteOff(int note)
 AudioStream *ElectSynth::getOutput()
 {
     return this->voiceMixer;
+}
+
+void ElectSynth::setVCOTable(uint8_t vco, short table)
+{
+    if (vco == 0)
+    {
+        this->setVCO1Table(table);
+    }
+    else
+    {
+        this->setVCO2Table(table);
+    }
 }
 
 void ElectSynth::setVCO1Table(short table)
@@ -78,7 +91,8 @@ void ElectSynth::setVCORatio(float ratio)
 
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        if (this->voiceStack[i] > 0) {
+        if (this->voiceStack[i] > 0)
+        {
             this->voices[i]->vco2->frequency(this->voiceStack[i] * this->vcoRatio);
         }
     }
@@ -86,7 +100,8 @@ void ElectSynth::setVCORatio(float ratio)
 
 void ElectSynth::setVCOMix(float mix)
 {
-    if (mix >= 0.0 && mix <=1.0) {
+    if (mix >= 0.0 && mix <= 1.0)
+    {
         this->vcoMix = mix;
     }
 
@@ -151,18 +166,31 @@ void ElectSynth::setRelease(float ms)
     }
 }
 
-short ElectSynth::getVCO1Table() {
-    return this->vco1Table;
-}   
-
-short ElectSynth::getVCO2Table() {
+short ElectSynth::getVCOTable(uint8_t vco)
+{
+    if (vco == 0)
+    {
+        return this->vco1Table;
+    }
     return this->vco2Table;
 }
 
-float ElectSynth::getVCORatio() {
+short ElectSynth::getVCO1Table()
+{
+    return this->vco1Table;
+}
+
+short ElectSynth::getVCO2Table()
+{
+    return this->vco2Table;
+}
+
+float ElectSynth::getVCORatio()
+{
     return this->vcoRatio;
 }
 
-float ElectSynth::getVCOMix() {
+float ElectSynth::getVCOMix()
+{
     return this->vcoMix;
 }

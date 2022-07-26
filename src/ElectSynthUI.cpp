@@ -16,16 +16,15 @@ void ElectSynthUI::draw()
     display.setCursor(20, 0);
     display.print("-ElectSynth-");
 
-    drawVCOFormSelection(0, 10, RED, this->synth->getVCO1Table());
+    drawVCOFormSelection();
     digitalWrite(enc1LED, HIGH);
 
-    drawVCOFormSelection(0, 70, GREEN, this->synth->getVCO2Table());
     digitalWrite(enc2LED, HIGH);
     digitalWrite(enc3LED, HIGH);
     digitalWrite(enc4LED, HIGH);
 
     display.drawFastVLine(18, 10, 118, WHITE);
-    display.drawFastHLine(0, 68, 128, WHITE);
+    display.drawFastHLine(20, 68, 108, WHITE);
     display.drawFastVLine(74, 68, 60, WHITE);
 
     drawScope();
@@ -38,13 +37,25 @@ void ElectSynthUI::update()
     drawScope();
 }
 
-void ElectSynthUI::drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form)
+void ElectSynthUI::drawVCOFormSelection()
 {
-    int colors[] = {DARK_GREY, DARK_GREY, DARK_GREY};
-    colors[form] = active_color;
-    display.drawBitmap(0, y, ICON_SINE, 16, 16, colors[0]);
-    display.drawBitmap(0, y + 20, ICON_SAWTOOTH, 16, 16, colors[1]);
-    display.drawBitmap(0, y + 40, ICON_SQUARE, 16, 16, colors[2]);
+    display.setCursor(0, 0);
+    display.print("O");
+    display.print(vcoTableSelect+1);
+    for (int i = 0; i < 4; i++)
+    {
+        uint16_t color = DARK_GREY;
+        if (i == this->synth->getVCO1Table())
+        {
+            color = CYAN;
+        }
+        if (i == this->synth->getVCO2Table())
+        {
+            color = MAGENTA;
+        }
+
+        display.drawBitmap(0, 10 + i * 16, WAVEFORM_ICONS[i], 16, 16, color);
+    }
 }
 
 void ElectSynthUI::drawScope()
@@ -68,15 +79,15 @@ void ElectSynthUI::drawVCORatio()
     display.setTextColor(BLUE);
     display.setCursor(30, 98);
     display.println(synth->getVCORatio(), 3);
-    display.drawFastHLine(42+6*vcoAddMod, 106, 6, BLUE);
+    display.drawFastHLine(42 + 6 * vcoAddMod, 106, 6, BLUE);
 }
 
 void ElectSynthUI::drawVCOMix()
 {
     display.fillRect(75, 69, 53, 59, BLACK);
-    display.drawCircle(101, 98-15, 5, RED);
-    display.drawCircle(101, 98+15, 5, GREEN);
-    display.fillCircle(101, 113-synth->getVCOMix()*30, 3, YELLOW);
+    display.drawCircle(101, 98 - 15, 5, RED);
+    display.drawCircle(101, 98 + 15, 5, GREEN);
+    display.fillCircle(101, 113 - synth->getVCOMix() * 30, 3, YELLOW);
 }
 
 short ElectSynthUI::getPrevWaveform(short table)
@@ -112,19 +123,23 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
     case 0:
     {
 
-        short form = this->synth->getVCO1Table();
-        form = moved_left ? getPrevWaveform(form) : getNextWaveform(form);
-        this->synth->setVCO1Table(form);
-        this->drawVCOFormSelection(0, 10, RED, form);
+        short form = this->synth->getVCOTable(vcoTableSelect);
+        form = moved_left ? form - 1 : form + 1;
+        if (form < 0)
+        {
+            form = 3;
+        }
+        if (form > 3)
+        {
+            form = 0;
+        }
+        this->synth->setVCOTable(vcoTableSelect, form);
+        this->drawVCOFormSelection();
         break;
     }
     case 1:
     {
 
-        short form = this->synth->getVCO2Table();
-        form = moved_left ? getPrevWaveform(form) : getNextWaveform(form);
-        this->synth->setVCO2Table(form);
-        this->drawVCOFormSelection(0, 70, GREEN, form);
         break;
     }
     case 2:
@@ -154,16 +169,25 @@ void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
 {
     switch (encoder)
     {
+    case 0:
+        if (pressed)
+        {
+            vcoTableSelect = vcoTableSelect == 0 ? 1 : 0;
+            Serial.println(vcoTableSelect);
+        }
+        break;
     case 2:
-        if (pressed) {
+        if (pressed)
+        {
             vcoAddMod++;
-            if (vcoAddMod > 2) {
+            if (vcoAddMod > 2)
+            {
                 vcoAddMod = 0;
             }
             drawVCORatio();
         }
         break;
-    
+
     default:
         break;
     }
