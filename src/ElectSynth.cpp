@@ -195,9 +195,9 @@ void ElectSynth::setRelease(float ms)
     {
         ms = 0.0f;
     }
-    else if (ms > 500.0f)
+    else if (ms > 1000.0f)
     {
-        ms = 500.0f;
+        ms = 1000.0f;
     }
     this->release = ms;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
