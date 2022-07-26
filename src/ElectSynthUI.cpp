@@ -3,6 +3,60 @@
 ElectSynthUI::ElectSynthUI(ElectSynth *synth)
 {
     this->synth = synth;
+    this->scope = new AudioAnalyzeOscilloscope();
+
+    this->connection = new AudioConnection(*this->synth->getOutput(), *this->scope);
+
+}
+
+void ElectSynthUI::draw() 
+{
+    display.fillScreen(BLACK);
+    display.setTextColor(WHITE);
+    display.setTextSize(1);
+    display.setCursor(20, 0);
+    display.print("-ElectSynth-");
+
+    drawVCOFormSelection(0, 10, RED, this->synth->getVCO1Table());
+    digitalWrite(enc1LED, HIGH);
+
+
+    drawVCOFormSelection(0, 70, GREEN, this->synth->getVCO2Table());
+    digitalWrite(enc2LED, HIGH);
+
+
+    display.drawFastVLine(18, 10, 118, WHITE);
+    display.drawFastHLine(0, 68, 128, WHITE);
+    display.drawFastVLine(74, 68, 60, WHITE);
+
+    drawScope();
+}
+
+void ElectSynthUI::update()
+{
+    drawScope();
+}
+
+void ElectSynthUI::drawVCOFormSelection(int16_t x, int16_t y, uint16_t active_color, short form) {
+    int colors[] = {DARK_GREY, DARK_GREY, DARK_GREY};
+    colors[form] = active_color;
+    display.drawBitmap(0, y, ICON_SINE, 16, 16, colors[0]);
+    display.drawBitmap(0, y+20, ICON_SAWTOOTH, 16, 16, colors[1]);
+    display.drawBitmap(0, y+40, ICON_SQUARE, 16, 16, colors[2]);
+}
+
+void ElectSynthUI::drawScope()
+{
+    display.fillRect(20, 10, 118, 57, BLACK);
+
+    int y = 0;
+    int i = 0;
+    for (int x=0; x<108; x++)
+    {
+        y = scope->buffer[i] >> 8;
+        display.drawPixel(x + 20, y + 40, PURPLE);
+        i+=2;
+    }
 }
 
 short ElectSynthUI::getPrevWaveform(short table)
@@ -14,7 +68,7 @@ short ElectSynthUI::getPrevWaveform(short table)
     case WAVEFORM_SAWTOOTH:
         return WAVEFORM_SINE;
     default:
-        return WAVEFORM_PULSE;
+        return WAVEFORM_SQUARE;
     }
 }
 
@@ -25,7 +79,7 @@ short ElectSynthUI::getNextWaveform(short table)
     case WAVEFORM_SINE:
         return WAVEFORM_SAWTOOTH;
     case WAVEFORM_SAWTOOTH:
-        return WAVEFORM_PULSE;
+        return WAVEFORM_SQUARE;
     default:
         return WAVEFORM_SINE;
     }
@@ -41,6 +95,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
         short form = this->synth->getVCO1Table();
         form = moved_left ? getPrevWaveform(form) : getNextWaveform(form);
         this->synth->setVCO1Table(form);
+        this->drawVCOFormSelection(0, 10, RED, form);
         break;
     }
     case 1:
@@ -49,6 +104,7 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
         short form = this->synth->getVCO2Table();
         form = moved_left ? getPrevWaveform(form) : getNextWaveform(form);
         this->synth->setVCO2Table(form);
+        this->drawVCOFormSelection(0, 70, GREEN, form);
         break;
     }
     case 2:

@@ -7,7 +7,7 @@ ElectVoice::ElectVoice()
     this->vco1->amplitude(1.0);
     this->vco2->amplitude(1.0);
     this->vco1->begin(WAVEFORM_SINE);
-    this->vco1->begin(WAVEFORM_SAWTOOTH);
+    this->vco2->begin(WAVEFORM_SAWTOOTH);
 
     this->vcoMixer = new AudioMixer4();
 

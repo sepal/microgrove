@@ -26,6 +26,7 @@ void setup()
 
     Serial.println("init connections");
     synth = new ElectSynth();
+    electUI = new ElectSynthUI(synth);
     i2s1 = new AudioOutputI2S();
     connections[0] = new AudioConnection(*synth->getOutput(), 0, *i2s1, 0);
     connections[1] = new AudioConnection(*synth->getOutput(), 0, *i2s1, 1);
@@ -37,7 +38,6 @@ void setup()
     codec->lineOutLevel(13);
     codec->volume(0.45);
 
-    electUI = new ElectSynthUI(synth);
 
     Serial.println("init input");
     input.begin();
@@ -49,9 +49,11 @@ void setup()
     AudioMemory(24);
     AudioInterrupts();
     display.fillScreen(BLACK);
+    electUI->draw();
 }
 
 void loop()
 {
     input.update();
+    electUI->update();
 }

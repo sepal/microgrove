@@ -56,5 +56,5 @@ void display_init()
 
     display.fillRect(0, 88+5, SCREEN_WIDTH, 5, GREEN);
 
-    delay(1000);
+    // delay(1000);
 }
