@@ -16,9 +16,6 @@ public:
     void draw();
     void update();
 
-    short getPrevWaveform(short table);
-    short getNextWaveform(short table);
-
     virtual void encoderEvent(int encoder, bool moved_left);
     virtual void encoderButtonEvent(int encoder, bool pressed);
 
@@ -32,11 +29,12 @@ protected:
     AudioAnalyzeOscilloscope *scope;
     AudioConnection *connection;
 
-    uint8_t vcoTableSelect = 0;
-    uint16_t vcoColors[2] = {MAGENTA, CYAN};
-
     uint8_t vcoAddMod = 1;
     float vcoAddModes[3] = {0.1f, 0.01f, 0.001f};
+
+    uint8_t vcoMixMod = 0;
+    float vcoMixModes[3] = {0.1f, 0.01f, 0.001f};
+
 
     uint8_t vcfMode = 0;
 };
