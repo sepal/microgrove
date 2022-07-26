@@ -8,7 +8,7 @@
 #include "icons.h"
 #include "Display.h"
 
-class ElectSynthUI : public EncoderHandler
+class ElectSynthUI : public EncoderHandler, public MenuButtonHandler
 {
 public:
     ElectSynthUI(ElectSynth *synth);
@@ -18,7 +18,7 @@ public:
 
     virtual void encoderEvent(int encoder, bool moved_left);
     virtual void encoderButtonEvent(int encoder, bool pressed);
-
+    virtual void menuButtonEvent(BUTTONS button, bool pressed);
 
 protected:
     void drawVCOFormSelection();
@@ -29,7 +29,12 @@ protected:
     void vcoEncoderEvent(int encoder, bool moved_left);
     void vcoEncoderButtonEvent(int encoder, bool pressed);
 
-    uint8_t page = 0;
+    void drawVCFCurve();
+
+    void vcfEncoderEvent(int encoder, bool moved_left);
+    void vcfEncoderButtonEvent(int encoder, bool pressed);
+
+    uint8_t page = 1;
 
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;
@@ -42,7 +47,11 @@ protected:
     float vcoMixModes[3] = {0.1f, 0.01f, 0.001f};
 
 
-    uint8_t vcfMode = 0;
+    long vcfFreqMode = 1;
+    long vcfQMode = 1;
+    float vcfFreqModes[3] = {50.f, 10.0f, 1.0f};
+    float vcfQModes[3] = {0.5f, 0.1f, 0.01f};
+    int vcfRadius[3] = {5, 3, 1};
 };
 
 #endif /* _ELECT_SYNTH_UI_H_ */

@@ -124,9 +124,16 @@ void ElectSynth::setFilterCutoff(float freq)
 void ElectSynth::setFilterResonance(float q)
 {
     this->filterQ = q;
+    if (this->filterQ > 5.0f) {
+        this->filterQ = 5.0f;
+    }
+    else if (this->filterQ < 0.0f) 
+    {
+        this->filterQ = 0.0f;
+    }
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->filter->resonance(filterQ);
+        this->voices[i]->filter->resonance(this->filterQ);
     }
 }
 
