@@ -34,7 +34,12 @@ protected:
     void vcfEncoderEvent(int encoder, bool moved_left);
     void vcfEncoderButtonEvent(int encoder, bool pressed);
 
-    uint8_t page = 1;
+    void drawADSR();
+
+    void adsrEncoderEvent(int encoder, bool moved_left);
+    void adsrEncoderButtonEvent(int encoder, bool pressed);
+
+    uint8_t page = 2;
 
     ElectSynth *synth;
     AudioAnalyzeOscilloscope *scope;
@@ -46,12 +51,19 @@ protected:
     uint8_t vcoMixMod = 0;
     float vcoMixModes[3] = {0.1f, 0.01f, 0.001f};
 
-
-    long vcfFreqMode = 1;
-    long vcfQMode = 1;
+    uint8_t vcfFreqMode = 1;
+    uint8_t vcfQMode = 1;
     float vcfFreqModes[3] = {50.f, 10.0f, 1.0f};
     float vcfQModes[3] = {0.5f, 0.1f, 0.01f};
     int vcfRadius[3] = {5, 3, 1};
+
+    uint8_t adsrMode[4] = {0, 0, 0, 0};
+    float adsrModes[4][3] = {
+        {50.0f, 1.0f, 0.1f},
+        {50.0f, 1.0f, 0.1f},
+        {0.1f, 0.05f, 0.01f},
+        {50.0f, 1.0f, 0.1f},
+    };
 };
 
 #endif /* _ELECT_SYNTH_UI_H_ */

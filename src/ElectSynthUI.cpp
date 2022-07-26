@@ -42,6 +42,17 @@ void ElectSynthUI::draw()
 
         drawVCFCurve();
         break;
+    case 2:
+        display.setCursor(104, 0);
+        display.print("ADSR");
+        digitalWrite(enc1LED, HIGH);
+        digitalWrite(enc2LED, HIGH);
+        digitalWrite(enc3LED, HIGH);
+        digitalWrite(enc4LED, HIGH);
+
+        drawADSR();
+
+        break;
     default:
         break;
     }
@@ -60,8 +71,11 @@ void ElectSynthUI::encoderEvent(int encoder, bool moved_left)
         this->vcoEncoderEvent(encoder, moved_left);
         break;
 
-    default:
+    case 1:
         this->vcfEncoderEvent(encoder, moved_left);
+        break;
+    case 2:
+        this->adsrEncoderEvent(encoder, moved_left);
         break;
     }
 }
@@ -76,6 +90,9 @@ void ElectSynthUI::encoderButtonEvent(int encoder, bool pressed)
 
     case 1:
         this->vcfEncoderButtonEvent(encoder, pressed);
+        break;
+    case 2:
+        this->adsrEncoderButtonEvent(encoder, pressed);
         break;
     default:
         break;
@@ -95,12 +112,12 @@ void ElectSynthUI::menuButtonEvent(BUTTONS button, bool pressed)
         page--;
         if (page < 0)
         {
-            page = 1;
+            page = 2;
         }
         break;
     case MenuButtonHandler::RIGHT:
         page++;
-        if (page > 1)
+        if (page > 2)
         {
             page = 0;
         }
@@ -334,4 +351,66 @@ void ElectSynthUI::vcfEncoderButtonEvent(int encoder, bool pressed)
     default:
         break;
     }
+}
+
+void ElectSynthUI::drawADSR()
+{
+    display.fillRect(0, 56, 128, 72, BLACK);
+
+    int attack = map(this->synth->getAttack(), 0, 500, 0, 31);
+    int decay = map(this->synth->getDecay(), 0, 500, 32, 63);
+    int sustain = map(this->synth->getSustain(), 0, 1, 120, 60);
+    int release = map(this->synth->getRelease(), 0, 1000, 70, 128);
+
+    display.drawLine(0, 120, attack, 60, RED);
+    display.drawLine(attack, 60, decay, sustain, GREEN);
+    display.drawLine(decay, sustain, 70, sustain, BLUE);
+    display.drawLine(70, sustain, release, 120, YELLOW);
+
+    display.drawCircle(attack, 60, vcfRadius[adsrMode[0]], RED);
+    display.drawCircle(decay, sustain, vcfRadius[adsrMode[1]], GREEN);
+    display.drawCircle(70, sustain, vcfRadius[adsrMode[2]], BLUE);
+    display.drawCircle(release, 120, vcfRadius[adsrMode[3]], YELLOW);
+}
+
+void ElectSynthUI::adsrEncoderEvent(int encoder, bool moved_left)
+{
+    float direction = moved_left ? -1 : 1;
+    float to_add = (adsrModes[encoder][adsrMode[encoder]] * direction);
+    float val = 0;
+    switch (encoder)
+    {
+    case 0:
+        val = synth->getAttack() + to_add;
+        synth->setAttack(val);
+        break;
+    case 1:
+        val = synth->getDecay() + to_add;
+        synth->setDecay(val);
+        break;
+    case 2:
+        val = synth->getSustain() + to_add;
+        synth->setSustain(val);
+        break;
+    case 3:
+        val = synth->getRelease() + to_add;
+        synth->setRelease(val);
+        break;
+
+    default:
+        break;
+    }
+    this->drawADSR();
+}
+
+void ElectSynthUI::adsrEncoderButtonEvent(int encoder, bool pressed)
+{
+    if (!pressed) {
+        return;
+    }
+    adsrMode[encoder]++;
+    if (adsrMode[encoder] > 2) {
+        adsrMode[encoder] = 0;
+    }
+    drawADSR();
 }

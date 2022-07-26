@@ -124,10 +124,11 @@ void ElectSynth::setFilterCutoff(float freq)
 void ElectSynth::setFilterResonance(float q)
 {
     this->filterQ = q;
-    if (this->filterQ > 5.0f) {
+    if (this->filterQ > 5.0f)
+    {
         this->filterQ = 5.0f;
     }
-    else if (this->filterQ < 0.0f) 
+    else if (this->filterQ < 0.0f)
     {
         this->filterQ = 0.0f;
     }
@@ -139,6 +140,14 @@ void ElectSynth::setFilterResonance(float q)
 
 void ElectSynth::setAttack(float ms)
 {
+    if (ms < 0.0f)
+    {
+        ms = 0.0f;
+    }
+    else if (ms > 500.0f)
+    {
+        ms = 500.0f;
+    }
     this->attack = ms;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
@@ -148,6 +157,14 @@ void ElectSynth::setAttack(float ms)
 
 void ElectSynth::setDecay(float ms)
 {
+    if (ms < 0.0f)
+    {
+        ms = 0.0f;
+    }
+    else if (ms > 500.0f)
+    {
+        ms = 500.0f;
+    }
     this->decay = ms;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
@@ -157,6 +174,14 @@ void ElectSynth::setDecay(float ms)
 
 void ElectSynth::setSustain(float level)
 {
+    if (level < 0.0f)
+    {
+        level = 0.0f;
+    }
+    else if (level > 1.0f)
+    {
+        level = 1.0f;
+    }
     this->sustain = level;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
@@ -166,6 +191,14 @@ void ElectSynth::setSustain(float level)
 
 void ElectSynth::setRelease(float ms)
 {
+    if (ms < 0.0f)
+    {
+        ms = 0.0f;
+    }
+    else if (ms > 500.0f)
+    {
+        ms = 500.0f;
+    }
     this->release = ms;
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
@@ -210,4 +243,24 @@ float ElectSynth::getFilterCutoff()
 float ElectSynth::getFilterResonance()
 {
     return this->filterQ;
+}
+
+float ElectSynth::getAttack()
+{
+    return this->attack;
+}
+
+float ElectSynth::getDecay()
+{
+    return this->decay;
+}
+
+float ElectSynth::getSustain()
+{
+    return this->sustain;
+}
+
+float ElectSynth::getRelease()
+{
+    return this->release;
 }

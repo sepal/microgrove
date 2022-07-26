@@ -42,6 +42,11 @@ public:
     float getFilterCutoff();
     float getFilterResonance();
 
+    float getAttack();
+    float getDecay();
+    float getSustain();
+    float getRelease();
+
 protected:
     ElectVoice *voices[ELECT_OSC_MAX_VOICES];
     AudioMixer4 *voiceMixer;
