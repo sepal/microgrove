@@ -56,6 +56,7 @@ void setup()
     keyboard.setReceiver(synth);
     input.setEncoderHandler(electUI);
     input.setMenuButtonHandler(electUI);
+    input.setUtilityButtonHandler(&keyboard);
     Serial.println("ready");
 
     AudioMemory(24);
