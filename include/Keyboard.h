@@ -1,14 +1,8 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
+#include <NoteReceiver.h>
 #include "input_handler.h"
-
-class NoteReceiver
-{
-public:
-    virtual void onNoteOn(int note, int velocity);
-    virtual void onNoteOff(int note);
-};
 
 
 class Keyboard: public KeyboardHandler, public UtilityButtonHandler

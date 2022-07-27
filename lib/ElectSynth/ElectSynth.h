@@ -2,8 +2,8 @@
 #define _ELECT_SYNTH_H_
 
 #include <Audio.h>
-#include "audio_constants.h"
-#include "Keyboard.h"
+#include <audio_constants.h>
+#include <NoteReceiver.h>
 #include "ElectVoice.h"
 
 #define ELECT_OSC_MAX_VOICES 4
