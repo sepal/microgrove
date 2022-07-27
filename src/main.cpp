@@ -16,14 +16,17 @@ Input input;
 Keyboard keyboard;
 ElectSynth *synth;
 ElectSynthUI *electUI;
-AudioConnection *connections[3];
+AudioConnection *connections[5];
 AudioOutputI2S *i2s1;
+AudioOutputUSB *usb;
 AudioControlSGTL5000 *codec;
 
 int vol = 50;
 
 void setup()
 {
+    usb = new AudioOutputUSB();
+    usb->begin();
     Serial.begin(9600);
 
     display_init();
@@ -34,6 +37,10 @@ void setup()
     i2s1 = new AudioOutputI2S();
     connections[0] = new AudioConnection(*synth->getOutput(), 0, *i2s1, 0);
     connections[1] = new AudioConnection(*synth->getOutput(), 0, *i2s1, 1);
+    connections[2] = new AudioConnection(*synth->getOutput(), 0, *usb, 0);
+    connections[3] = new AudioConnection(*synth->getOutput(), 0, *usb, 1);
+
+
 
     codec = new AudioControlSGTL5000();
     codec->enable();
