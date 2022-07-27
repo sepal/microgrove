@@ -13,6 +13,9 @@ struct ElectVoice
     AudioSynthWaveform *vco1;
     AudioSynthWaveform *vco2;
     AudioMixer4 *vcoMixer;
+
+    AudioSynthWaveformDc *dc;
+    AudioEffectEnvelope *filterEnv;
     AudioFilterStateVariable *filter;
     AudioMixer4 *filterMixer;
     AudioEffectEnvelope* env;

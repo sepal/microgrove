@@ -26,6 +26,7 @@ void ElectSynth::onNoteOn(int note, int velocity)
             this->voices[i]->vco1->frequency(vcoFreq);
             this->voices[i]->vco2->frequency(vcoFreq * this->vcoRatio);
             this->voices[i]->env->noteOn();
+            this->voices[i]->filterEnv->noteOn();
             this->voiceStack[i] = vcoFreq;
             return;
         }
@@ -41,6 +42,7 @@ void ElectSynth::onNoteOff(int note)
         if (this->voiceStack[i] == vcoFreq)
         {
             this->voices[i]->env->noteOff();
+            this->voices[i]->filterEnv->noteOff();
             this->voiceStack[i] = 0;
         }
     }
@@ -65,22 +67,22 @@ void ElectSynth::setVCOTable(uint8_t vco, short table)
 
 void ElectSynth::setVCO1Table(short table)
 {
-    this->vco1Table = table;
+    this->vco1Waveform = table;
     AudioNoInterrupts();
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->vco1->begin(vco1Table);
+        this->voices[i]->vco1->begin(vco1Waveform);
     }
     AudioInterrupts();
 }
 
 void ElectSynth::setVCO2Table(short table)
 {
-    this->vco2Table = table;
+    this->vco2Waveform = table;
     AudioNoInterrupts();
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->vco2->begin(this->vco2Table);
+        this->voices[i]->vco2->begin(this->vco2Waveform);
     }
     AudioInterrupts();
 }
@@ -100,10 +102,7 @@ void ElectSynth::setVCORatio(float ratio)
 
 void ElectSynth::setVCOMix(float mix)
 {
-    if (mix >= 0.0 && mix <= 1.0)
-    {
-        this->vcoMix = mix;
-    }
+    this->vcoMix = constrain(mix, 0.0f, 1.0f);
 
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
@@ -114,7 +113,8 @@ void ElectSynth::setVCOMix(float mix)
 
 void ElectSynth::setFilterCutoff(float freq)
 {
-    this->filterFreq = freq;
+    this->filterFreq = constrain(freq, 0.0f, 1000.0f);
+
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
         this->voices[i]->filter->frequency(filterFreq);
@@ -123,86 +123,67 @@ void ElectSynth::setFilterCutoff(float freq)
 
 void ElectSynth::setFilterResonance(float q)
 {
-    this->filterQ = q;
-    if (this->filterQ > 5.0f)
-    {
-        this->filterQ = 5.0f;
-    }
-    else if (this->filterQ < 0.0f)
-    {
-        this->filterQ = 0.0f;
-    }
+    this->filterQ = constrain(q, 0.0f, 5.0f);
+
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
         this->voices[i]->filter->resonance(this->filterQ);
     }
 }
 
-void ElectSynth::setAttack(float ms)
-{
-    if (ms < 0.0f)
-    {
-        ms = 0.0f;
-    }
-    else if (ms > 500.0f)
-    {
-        ms = 500.0f;
-    }
-    this->attack = ms;
+void ElectSynth::setVCFDecay(float ms) {
+    this->filterDecay = constrain(ms, 10.0f, 1000.0f);
+
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->env->attack(ms);
+        this->voices[i]->filterEnv->decay(this->filterDecay/2);
+        this->voices[i]->filterEnv->release(this->filterDecay/2);
+    }
+}
+
+void ElectSynth::setVCFEnv(float n) {
+    this->filterEnv = constrain(n, 0.0f, 7.0f);
+
+    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
+    {
+        this->voices[i]->filter->octaveControl(this->filterEnv);
+    }
+}
+
+void ElectSynth::setAttack(float ms)
+{
+    this->attack = constrain(ms, 0.0f, 500.0f);
+    for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
+    {
+        this->voices[i]->env->attack(this->attack);
     }
 }
 
 void ElectSynth::setDecay(float ms)
 {
-    if (ms < 0.0f)
-    {
-        ms = 0.0f;
-    }
-    else if (ms > 500.0f)
-    {
-        ms = 500.0f;
-    }
-    this->decay = ms;
+    this->decay = constrain(ms, 0.0f, 500.0f);
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->env->decay(ms);
+        this->voices[i]->env->decay(decay);
     }
 }
 
 void ElectSynth::setSustain(float level)
 {
-    if (level < 0.0f)
-    {
-        level = 0.0f;
-    }
-    else if (level > 1.0f)
-    {
-        level = 1.0f;
-    }
-    this->sustain = level;
+    this->sustain = constrain(level, 0.0f, 1.0f);
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->env->sustain(level);
+        this->voices[i]->env->sustain(this->sustain);
     }
 }
 
 void ElectSynth::setRelease(float ms)
 {
-    if (ms < 0.0f)
-    {
-        ms = 0.0f;
-    }
-    else if (ms > 1000.0f)
-    {
-        ms = 1000.0f;
-    }
-    this->release = ms;
+    this->release = constrain(ms, 0.0f, 1000.0f);
+    
     for (int i = 0; i < ELECT_OSC_MAX_VOICES; i++)
     {
-        this->voices[i]->env->release(ms);
+        this->voices[i]->env->release(this->release);
     }
 }
 
@@ -210,19 +191,19 @@ short ElectSynth::getVCOTable(uint8_t vco)
 {
     if (vco == 0)
     {
-        return this->vco1Table;
+        return this->vco1Waveform;
     }
-    return this->vco2Table;
+    return this->vco2Waveform;
 }
 
 short ElectSynth::getVCO1Table()
 {
-    return this->vco1Table;
+    return this->vco1Waveform;
 }
 
 short ElectSynth::getVCO2Table()
 {
-    return this->vco2Table;
+    return this->vco2Waveform;
 }
 
 float ElectSynth::getVCORatio()
@@ -263,4 +244,13 @@ float ElectSynth::getSustain()
 float ElectSynth::getRelease()
 {
     return this->release;
+}
+float ElectSynth::getVCFDecay()
+{
+    return this->filterDecay;
+}
+
+float ElectSynth:: getVCFEnv()
+{
+    return this->filterEnv;
 }

@@ -41,6 +41,8 @@ void ElectSynthUI::draw()
         digitalWrite(enc4LED, LOW);
 
         drawVCFCurve();
+        drawVCFDecay();
+        drawVCFEnv();
         break;
     case 2:
         display.setCursor(104, 0);
@@ -288,25 +290,56 @@ void ElectSynthUI::drawVCFCurve()
     int x = ((this->synth->getFilterCutoff() / 1000.0f) * 54.0f);
     int y = 118 - ((this->synth->getFilterResonance() / 5.0f) * 54.0f);
 
-    if (vcfQMode == vcfFreqMode)
+    if (vcfMode[0] == vcfMode[1])
     {
-        display.drawCircle(x, y, vcfRadius[vcfQMode], WHITE);
+        display.drawCircle(x, y, modeRadius[vcfMode[0]], WHITE);
     }
     else
     {
-        display.drawCircle(x, y, vcfRadius[vcfFreqMode], RED);
-        display.drawCircle(x, y, vcfRadius[vcfQMode], GREEN);
+        display.drawCircle(x, y, modeRadius[vcfMode[0]], RED);
+        display.drawCircle(x, y, modeRadius[vcfMode[1]], GREEN);
     }
+}
+
+void ElectSynthUI::drawVCFDecay()
+{
+    display.setCursor(77, 58);
+    display.setTextColor(BLUE);
+    display.print("Decay");
+
+    display.fillRect(77, 68, 35, 12, BLACK);
+    display.setTextColor(BLUE);
+    display.setCursor(77, 68);
+
+    char decay[6];
+    sprintf(decay, "%06.1f", synth->getVCFDecay());
+    display.print(decay);
+    display.drawFastHLine(77 + vcfPrecessionPos[0][vcfMode[2]], 78, 6, BLUE);
+}
+
+void ElectSynthUI::drawVCFEnv()
+{
+    display.setCursor(77, 96);
+    display.setTextColor(YELLOW);
+    display.print("VCF Env");
+
+    display.fillRect(77, 104, 35, 12, BLACK);
+    display.setTextColor(YELLOW);
+    display.setCursor(77, 104);
+    display.println(synth->getVCFEnv(), 2);
+    display.drawFastHLine(77 + vcfPrecessionPos[1][vcfMode[3]], 112, 6, YELLOW);
+
 }
 
 void ElectSynthUI::vcfEncoderEvent(int encoder, bool moved_left)
 {
+    float direction = moved_left ? -1 : 1;
+    float to_add = (vcfModes[encoder][vcfMode[encoder]] * direction);
 
     switch (encoder)
     {
     case 0:
     {
-        float to_add = moved_left ? -vcfFreqModes[vcfFreqMode] : vcfFreqModes[vcfFreqMode];
         float freq = this->synth->getFilterCutoff() + to_add;
         this->synth->setFilterCutoff(freq);
         this->drawVCFCurve();
@@ -314,10 +347,23 @@ void ElectSynthUI::vcfEncoderEvent(int encoder, bool moved_left)
     }
     case 1:
     {
-        float to_add = moved_left ? -vcfQModes[vcfQMode] : vcfQModes[vcfQMode];
         float q = this->synth->getFilterResonance() + to_add;
         this->synth->setFilterResonance(q);
         this->drawVCFCurve();
+        break;
+    }
+    case 2:
+    {
+        float ms = this->synth->getVCFDecay() + to_add;
+        this->synth->setVCFDecay(ms);
+        this->drawVCFDecay();
+        break;
+    }
+    case 3:
+    {
+        float n = this->synth->getVCFEnv() + to_add;
+        this->synth->setVCFEnv(n);
+        this->drawVCFEnv();
         break;
     }
 
@@ -328,29 +374,16 @@ void ElectSynthUI::vcfEncoderEvent(int encoder, bool moved_left)
 
 void ElectSynthUI::vcfEncoderButtonEvent(int encoder, bool pressed)
 {
-    if (!pressed)
-    {
+    if (!pressed) {
         return;
     }
-
-    switch (encoder)
-    {
-    case 0:
-        vcfFreqMode++;
-        if (vcfFreqMode > 2)
-            vcfFreqMode = 0;
-        this->drawVCFCurve();
-        break;
-    case 1:
-        vcfQMode++;
-        if (vcfQMode > 2)
-            vcfQMode = 0;
-        this->drawVCFCurve();
-        break;
-
-    default:
-        break;
+    vcfMode[encoder]++;
+    if (vcfMode[encoder] > 2) {
+        vcfMode[encoder] = 0;
     }
+    drawVCFCurve();
+    drawVCFDecay();
+    drawVCFEnv();
 }
 
 void ElectSynthUI::drawADSR()
@@ -367,10 +400,10 @@ void ElectSynthUI::drawADSR()
     display.drawLine(decay, sustain, 70, sustain, BLUE);
     display.drawLine(70, sustain, release, 120, YELLOW);
 
-    display.drawCircle(attack, 60, vcfRadius[adsrMode[0]], RED);
-    display.drawCircle(decay, sustain, vcfRadius[adsrMode[1]], GREEN);
-    display.drawCircle(70, sustain, vcfRadius[adsrMode[2]], BLUE);
-    display.drawCircle(release, 120, vcfRadius[adsrMode[3]], YELLOW);
+    display.drawCircle(attack, 60, modeRadius[adsrMode[0]], RED);
+    display.drawCircle(decay, sustain, modeRadius[adsrMode[1]], GREEN);
+    display.drawCircle(70, sustain, modeRadius[adsrMode[2]], BLUE);
+    display.drawCircle(release, 120, modeRadius[adsrMode[3]], YELLOW);
 }
 
 void ElectSynthUI::adsrEncoderEvent(int encoder, bool moved_left)

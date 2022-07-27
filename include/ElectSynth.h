@@ -24,8 +24,11 @@ public:
 
     void setVCORatio(float ratio);
     void setVCOMix(float mix);
+    
     void setFilterCutoff(float freq);
     void setFilterResonance(float q);
+    void setVCFDecay(float ms);
+    void setVCFEnv(float n);
 
     void setAttack(float ms);
     void setDecay(float ms);
@@ -41,6 +44,8 @@ public:
 
     float getFilterCutoff();
     float getFilterResonance();
+    float getVCFDecay();
+    float getVCFEnv();
 
     float getAttack();
     float getDecay();
@@ -53,13 +58,15 @@ protected:
     AudioConnection *connections[ELECT_OSC_MAX_VOICES];
 
     float vcoFreq = 220.0f;
-    short vco1Table = WAVEFORM_SINE;
-    short vco2Table = WAVEFORM_SAWTOOTH;
+    short vco1Waveform = WAVEFORM_SINE;
+    short vco2Waveform = WAVEFORM_SAWTOOTH;
     float vcoRatio = 0.5f;
     float vcoMix = 0.5f;
 
     float filterFreq = 1000.0f;
     float filterQ = 0.0f;
+    float filterDecay = 200.0f;
+    float filterEnv = 2.0f;
 
     float attack = 1.5f;
     float decay = 35.0f;
