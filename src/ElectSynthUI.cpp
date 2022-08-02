@@ -37,8 +37,8 @@ void ElectSynthUI::draw()
         display.print("VCF");
         digitalWrite(enc1LED, HIGH);
         digitalWrite(enc2LED, HIGH);
-        digitalWrite(enc3LED, LOW);
-        digitalWrite(enc4LED, LOW);
+        digitalWrite(enc3LED, HIGH);
+        digitalWrite(enc4LED, HIGH);
 
         drawVCFCurve();
         drawVCFDecay();
